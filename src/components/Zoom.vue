@@ -39,6 +39,7 @@ const targetContentCenter = {x: 0, y: 0};
 let mouseStillTimer: number | null = null;
 let lastMouseX = 0;
 let lastMouseY = 0;
+let hasMovedSinceLastCapture = false;
 const monitor = {
     size: {x: 0, y: 0},
     position: {x: 0, y: 0},
@@ -107,9 +108,11 @@ async function windowMove() {
     cursor.x = location[0];
     cursor.y = location[1];
 
-    // 窗口位置：鼠标为左上角
-    targetLocation.x = cursor.x;
-    targetLocation.y = cursor.y;
+    // 窗口位置：鼠标右下方保持距离
+    const OFFSET_X = 20; // 向右偏移20像素
+    const OFFSET_Y = 20; // 向下偏移20像素
+    targetLocation.x = cursor.x + OFFSET_X;
+    targetLocation.y = cursor.y + OFFSET_Y;
 
     // 内容显示：以鼠标为中心
     targetContentCenter.x = cursor.x;
@@ -119,15 +122,27 @@ async function windowMove() {
     if (cursor.x !== lastMouseX || cursor.y !== lastMouseY) {
         lastMouseX = cursor.x;
         lastMouseY = cursor.y;
+        hasMovedSinceLastCapture = true; // 标记鼠标已移动
 
         if (mouseStillTimer) {
             clearTimeout(mouseStillTimer);
         }
 
-        // 鼠标静止2秒后刷新截图
+        // 鼠标移动后静止2秒后刷新截图
         mouseStillTimer = setTimeout(async () => {
+            if (!hasMovedSinceLastCapture) return; // 如果没有移动过，不执行截图
+            // 先隐藏窗口，再截图，再显示
+            const { window } = await import("@tauri-apps/api");
+            await window.getCurrent().hide();
+
+            await new Promise(resolve => setTimeout(resolve, 100)); // 等待100ms确保窗口隐藏
+
             const { convertFileSrc, invoke } = await import("@tauri-apps/api/tauri");
-            emit('update:screenshotPath', convertFileSrc((await invoke("update_screenshot", {})).replaceAll("\\", "/")) + "?" + Date.now());
+            const newScreenshotPath = convertFileSrc((await invoke("update_screenshot", {})).replaceAll("\\", "/")) + "?" + Date.now();
+
+            await window.getCurrent().show();
+            emit('update:screenshotPath', newScreenshotPath);
+            hasMovedSinceLastCapture = false; // 重置移动标记
         }, 2000);
     }
 
