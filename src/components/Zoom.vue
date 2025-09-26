@@ -73,6 +73,13 @@ watch(() => props.isActive, async () => {
         await moveLoop();
         await updateMonitor();
         lockOnScreen.value = true;
+    } else {
+        // 窗口隐藏时清除定时器，防止自动截图
+        if (mouseStillTimer) {
+            clearTimeout(mouseStillTimer);
+            mouseStillTimer = null;
+        }
+        hasMovedSinceLastCapture = false;
     }
 }, {
     immediate: true
