@@ -53,12 +53,14 @@ jobs:
       - name: List build output
         run: |
           echo "=== Release directory ==="
-          ls -la src-tauri/target/release/
+          dir src-tauri\target\release\
           echo "=== Bundle directory ==="
-          ls -la src-tauri/target/release/bundle/ || echo "No bundle directory"
-          if [ -d "src-tauri/target/release/bundle" ]; then
-            find src-tauri/target/release/bundle -name "*.exe" -type f
-          fi
+          if (Test-Path "src-tauri\target\release\bundle") {
+            dir src-tauri\target\release\bundle\ -Recurse -Filter "*.exe"
+          } else {
+            echo "No bundle directory"
+          }
+        shell: pwsh
 
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
