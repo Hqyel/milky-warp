@@ -3,10 +3,10 @@ name: 'Build and Release'
 on:
   push:
     branches: [ main, master ]
+    tags:
+      - 'v*'
   pull_request:
     branches: [ main, master ]
-  release:
-    types: [published]
 
 jobs:
   build-tauri:
@@ -43,18 +43,15 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          tagName: v__VERSION__
-          releaseName: 'Milky Warp v__VERSION__'
+          tagName: ${{ github.ref_name }}
+          releaseName: 'Milky Warp ${{ github.ref_name }}'
           releaseBody: 'See the assets to download and install this version.'
-          releaseDraft: true
+          releaseDraft: false
           prerelease: false
           includeDebug: false
 
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: build-windows
-          path: |
-            src-tauri/target/release/bundle/
-            src-tauri/target/release/*.exe
-            src-tauri/target/release/milky-warp
+          name: milky-warp-windows-exe
+          path: src-tauri/target/release/*.exe
