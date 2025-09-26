@@ -1,4 +1,4 @@
 export const config = {
-    "shortcut": "Ctrl+Alt+A",
+    "shortcut": "Ctrl+Alt+1",
     "holdShortcut": "Shift+Ctrl+A",
 }

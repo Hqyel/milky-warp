@@ -97,8 +97,8 @@ async function windowMove() {
     cursor.x = location[0];
     cursor.y = location[1];
 
-    targetLocation.x = cursor.x - (scale.value * WINDOW_SIZE_X) / 2;
-    targetLocation.y = cursor.y - (scale.value * WINDOW_SIZE_Y) / 2;
+    targetLocation.x = cursor.x;
+    targetLocation.y = cursor.y;
 
     const moveWindow = async () => {
         await window.appWindow.setPosition(getWindowPosition());
