@@ -48,14 +48,18 @@ register(config.shortcut, async () => {
 
 // 注册缩放快捷键
 register(config.zoomInShortcut, async () => {
+    console.log('Zoom in shortcut triggered, isActive:', isWindowDisplayed.value, 'current zoom:', zoomLevel.value);
     if (isWindowDisplayed.value) {
         zoomLevel.value = Math.min(zoomLevel.value + 1, 10); // 最大缩放10级
+        console.log('Zoom in: new zoom level:', zoomLevel.value);
     }
 });
 
 register(config.zoomOutShortcut, async () => {
+    console.log('Zoom out shortcut triggered, isActive:', isWindowDisplayed.value, 'current zoom:', zoomLevel.value);
     if (isWindowDisplayed.value) {
         zoomLevel.value = Math.max(zoomLevel.value - 1, -5); // 最小缩放-5级
+        console.log('Zoom out: new zoom level:', zoomLevel.value);
     }
 });
 

@@ -186,6 +186,11 @@ async function updateSavedLocation() {
 
     targetZoomLevel.value = lerp(targetZoomLevel.value, props.zoomLevel, alpha);
 
+    // 调试缩放信息
+    if (props.zoomLevel !== 0) {
+        console.log('Zoom component - props.zoomLevel:', props.zoomLevel, 'targetZoomLevel:', targetZoomLevel.value, 'scale:', Math.pow(1.5, targetZoomLevel.value));
+    }
+
     savedLocation.x = lerp(savedLocation.x, targetContentCenter.x, alpha);
     savedLocation.y = lerp(savedLocation.y, targetContentCenter.y, alpha);
 
