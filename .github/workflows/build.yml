@@ -43,15 +43,27 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          tagName: ${{ github.ref_name }}
-          releaseName: 'Milky Warp ${{ github.ref_name }}'
+          tagName: ${{ startsWith(github.ref, 'refs/tags/') && github.ref_name || '' }}
+          releaseName: ${{ startsWith(github.ref, 'refs/tags/') && format('Milky Warp {0}', github.ref_name) || '' }}
           releaseBody: 'See the assets to download and install this version.'
           releaseDraft: false
           prerelease: false
           includeDebug: false
 
+      - name: List build output
+        run: |
+          echo "=== Release directory ==="
+          ls -la src-tauri/target/release/
+          echo "=== Bundle directory ==="
+          ls -la src-tauri/target/release/bundle/ || echo "No bundle directory"
+          if [ -d "src-tauri/target/release/bundle" ]; then
+            find src-tauri/target/release/bundle -name "*.exe" -type f
+          fi
+
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: milky-warp-windows-exe
-          path: src-tauri/target/release/*.exe
+          name: milky-warp-windows-portable
+          path: |
+            src-tauri/target/release/milky-warp.exe
+            src-tauri/target/release/bundle/
