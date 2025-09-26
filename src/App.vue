@@ -2,6 +2,7 @@
     <MZoom
         :screenshot-path="screenshotPath"
         :is-active="isWindowDisplayed"
+        :zoom-level="zoomLevel"
         :class="{hide: holdHide}"
         @update:screenshotPath="screenshotPath = $event"
     />
@@ -21,6 +22,7 @@ const holdShortcut = keys[config.holdShortcut];
 
 const isWindowDisplayed = ref(false);
 const screenshotPath = ref("");
+const zoomLevel = ref(0);
 
 const holdHide = ref(false);
 
@@ -44,6 +46,18 @@ register(config.shortcut, async () => {
     }
 });
 
+// 注册缩放快捷键
+register(config.zoomInShortcut, async () => {
+    if (isWindowDisplayed.value) {
+        zoomLevel.value = Math.min(zoomLevel.value + 1, 10); // 最大缩放10级
+    }
+});
+
+register(config.zoomOutShortcut, async () => {
+    if (isWindowDisplayed.value) {
+        zoomLevel.value = Math.max(zoomLevel.value - 1, -5); // 最小缩放-5级
+    }
+});
 
 watch(holdShortcut, async (value) => {
     if (value) {

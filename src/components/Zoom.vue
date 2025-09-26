@@ -1,5 +1,5 @@
 <template>
-    <div class="wrapper" @wheel="updateZoom" @click="toggleMove">
+    <div class="wrapper" @click="toggleMove">
         <div class="screen" :style="screenStyle"></div>
     </div>
 </template>
@@ -14,6 +14,7 @@ import {LogicalPosition, LogicalSize} from "@tauri-apps/api/window";
 const props = defineProps<{
     screenshotPath: string;
     isActive: boolean;
+    zoomLevel: number;
 }>();
 
 const emit = defineEmits<{
@@ -26,7 +27,6 @@ const WINDOW_SIZE_Y = 128;
 const move = ref(true);
 const lockOnScreen = ref(false);
 
-const zoomLevel = ref(0);
 const targetZoomLevel = ref(0);
 const scale = computed(() => Math.pow(1.5, targetZoomLevel.value));
 
@@ -97,12 +97,6 @@ async function updateMonitor() {
     monitor.position = {x: position.x, y: position.y};
     monitor.size = {x: size.width, y: size.height};
     monitor.scale = scaleFactor;
-}
-
-async function updateZoom(event: WheelEvent) {
-    zoomLevel.value -= event.deltaY / 100;
-    zoomLevel.value = Math.max(0, zoomLevel.value);
-    zoomLevel.value = Math.min(4, zoomLevel.value);
 }
 
 async function updateWindowSize() {
@@ -190,7 +184,7 @@ async function updateSavedLocation() {
     const alpha = forceInstantMove ? 1 : 0.3;
     forceInstantMove = false;
 
-    targetZoomLevel.value = lerp(targetZoomLevel.value, zoomLevel.value, alpha);
+    targetZoomLevel.value = lerp(targetZoomLevel.value, props.zoomLevel, alpha);
 
     savedLocation.x = lerp(savedLocation.x, targetContentCenter.x, alpha);
     savedLocation.y = lerp(savedLocation.y, targetContentCenter.y, alpha);
