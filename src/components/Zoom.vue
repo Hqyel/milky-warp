@@ -29,6 +29,7 @@ const scale = computed(() => Math.pow(1.5, targetZoomLevel.value));
 const cursor = {x: 0, y: 0};
 const savedLocation = reactive({x: 0, y: 0});
 const targetLocation = {x: 0, y: 0};
+const targetContentCenter = {x: 0, y: 0};
 const monitor = {
     size: {x: 0, y: 0},
     position: {x: 0, y: 0},
@@ -97,8 +98,13 @@ async function windowMove() {
     cursor.x = location[0];
     cursor.y = location[1];
 
+    // 窗口位置：鼠标为左上角
     targetLocation.x = cursor.x;
     targetLocation.y = cursor.y;
+
+    // 内容显示：以鼠标为中心
+    targetContentCenter.x = cursor.x;
+    targetContentCenter.y = cursor.y;
 
     const moveWindow = async () => {
         await window.appWindow.setPosition(getWindowPosition());
@@ -134,8 +140,8 @@ async function updateSavedLocation() {
 
     targetZoomLevel.value = lerp(targetZoomLevel.value, zoomLevel.value, alpha);
 
-    savedLocation.x = lerp(savedLocation.x, targetLocation.x, alpha);
-    savedLocation.y = lerp(savedLocation.y, targetLocation.y, alpha);
+    savedLocation.x = lerp(savedLocation.x, targetContentCenter.x, alpha);
+    savedLocation.y = lerp(savedLocation.y, targetContentCenter.y, alpha);
 
     function lerp(a: number, b: number, alpha: number) {
         return a * (1 - alpha) + b * alpha;
