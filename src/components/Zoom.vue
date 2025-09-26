@@ -49,9 +49,14 @@ const monitor = {
 let forceInstantMove = false;
 
 const screenStyle = computed(() => {
+    // 计算背景位置：让内容以鼠标为中心显示
+    // savedLocation 现在是内容的中心点，我们需要调整它让内容在窗口中居中
+    const centerOffsetX = WINDOW_SIZE_X / 2;
+    const centerOffsetY = WINDOW_SIZE_Y / 2;
+
     return {
         backgroundImage: `url(${props.screenshotPath})`,
-        backgroundPosition: `${-savedLocation.x + monitor.position.x / monitor.scale}px ${-savedLocation.y + monitor.position.y / monitor.scale}px`,
+        backgroundPosition: `${-savedLocation.x + centerOffsetX + monitor.position.x / monitor.scale}px ${-savedLocation.y + centerOffsetY + monitor.position.y / monitor.scale}px`,
         backgroundSize: `${monitor.size.x / monitor.scale}px ${monitor.size.y / monitor.scale}px`,
     };
 });
