@@ -42,7 +42,7 @@
                 "icons/icon.ico"
             ],
             "identifier": "com.milky-warp.app",
-            "targets": "all"
+            "targets": []
         },
         "security": {
             "csp": "default-src 'self'; img-src 'self' asset: https://asset.localhost"

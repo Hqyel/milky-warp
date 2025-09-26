@@ -16,6 +16,10 @@ const props = defineProps<{
     isActive: boolean;
 }>();
 
+const emit = defineEmits<{
+    'update:screenshotPath': [path: string]
+}>();
+
 const WINDOW_SIZE_X = 256;
 const WINDOW_SIZE_Y = 128;
 
@@ -30,6 +34,11 @@ const cursor = {x: 0, y: 0};
 const savedLocation = reactive({x: 0, y: 0});
 const targetLocation = {x: 0, y: 0};
 const targetContentCenter = {x: 0, y: 0};
+
+// 鼠标静止检测
+let mouseStillTimer: number | null = null;
+let lastMouseX = 0;
+let lastMouseY = 0;
 const monitor = {
     size: {x: 0, y: 0},
     position: {x: 0, y: 0},
@@ -105,6 +114,22 @@ async function windowMove() {
     // 内容显示：以鼠标为中心
     targetContentCenter.x = cursor.x;
     targetContentCenter.y = cursor.y;
+
+    // 检测鼠标是否移动，如果移动则重置定时器
+    if (cursor.x !== lastMouseX || cursor.y !== lastMouseY) {
+        lastMouseX = cursor.x;
+        lastMouseY = cursor.y;
+
+        if (mouseStillTimer) {
+            clearTimeout(mouseStillTimer);
+        }
+
+        // 鼠标静止2秒后刷新截图
+        mouseStillTimer = setTimeout(async () => {
+            const { convertFileSrc, invoke } = await import("@tauri-apps/api/tauri");
+            emit('update:screenshotPath', convertFileSrc((await invoke("update_screenshot", {})).replaceAll("\\", "/")) + "?" + Date.now());
+        }, 2000);
+    }
 
     const moveWindow = async () => {
         await window.appWindow.setPosition(getWindowPosition());

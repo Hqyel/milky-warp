@@ -1,5 +1,10 @@
 <template>
-    <MZoom :screenshot-path="screenshotPath" :is-active="isWindowDisplayed" :class="{hide: holdHide}"/>
+    <MZoom
+        :screenshot-path="screenshotPath"
+        :is-active="isWindowDisplayed"
+        :class="{hide: holdHide}"
+        @update:screenshotPath="screenshotPath = $event"
+    />
 </template>
 
 <script setup lang="ts">
